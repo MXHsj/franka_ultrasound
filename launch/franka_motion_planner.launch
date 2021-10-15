@@ -1,0 +1,5 @@
+<?xml version="1.0" ?>
+<launch>
+<node name="camera2target" pkg="robotic_ultrasound" type="spawner" respawn="false" output="screen" />
+<node name="motion_planner" pkg="robotic_ultrasound" type="spawner" respawn="false" output="screen" />
+</launch>

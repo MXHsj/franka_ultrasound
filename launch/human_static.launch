@@ -1,0 +1,17 @@
+<launch>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch"/>
+
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-file $(find robotic_ultrasound)/models/human_static.urdf -urdf -z 0 -model human_model" />
+  <arg name="model" />
+  <arg name="gui" default="True" /> 
+  <arg name="rvizconfig" default="$(find urdf_tutorial)/rviz/urdf.rviz" />
+
+  <param name="robot_description" command="$(find xacro)/xacro.py $(find robotic_ultrasound)/models/human_static.urdf" />
+  <!-- <param name="robot_description" textfile="$(find robotic_ultrasound)/models/human_static.urdf" /> -->
+
+  <param name="use_gui" value="$(arg gui)"/>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+
+</launch>
