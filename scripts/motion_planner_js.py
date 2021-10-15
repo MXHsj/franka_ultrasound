@@ -21,9 +21,9 @@ class Teleop:
   def __init__(self):
     rospy.init_node('franka_teleop_joy')
     # joystick buttons/axes
-    self.ax0deadzone = rospy.get_param('~ax0deadzone', 0.03)
-    self.ax1deadzone = rospy.get_param('~deadman_button', 0.06)
-    self.ax4deadzone = rospy.get_param('~deadman_button', 0.095)
+    self.ax0dzone = rospy.get_param('~ax0deadzone', 0.03)
+    self.ax1dzone = rospy.get_param('~ax1deadzone', 0.03)
+    self.ax4dzone = rospy.get_param('~ax4deadzone', 0.05)
     self.cmd = None
     self.js = Joy()
     self.js.axes = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -42,9 +42,8 @@ class Teleop:
     self.d_master = Twist()
     self.isContact_msg = Bool()
     # tele operation states
-    self.isContact = False          # automatic force compliant
-    self.isAbort = False            # gradual stopping motion
-    self.isEstop = False         # emergency-stop
+    self.isContact = False          # force control along approach vector
+    self.isAbort = False            # abort motion
     self.triggerState = False       # tranlation-rotation switch
     self.triggerStateOld = False
     self.wrench_slave = Wrench()
@@ -52,13 +51,14 @@ class Teleop:
     self.force_des = 3.0  # max contact force [N]
     self.force_max = 8.0
 
+  def doTeleop(self):
     # ROS stuff
     cmd_pub = rospy.Publisher('franka_cmd_acc', Twist, queue_size=1)
     contact_mode_pub = rospy.Publisher('isContact', Bool, queue_size=1)
     rospy.Subscriber("joy", Joy, self.js_callback)
     rospy.Subscriber('franka_state_controller/franka_states', FrankaState, self.ee_callback)
     rospy.Subscriber('/franka_state_controller/F_ext', WrenchStamped, self.force_callback)
-    self.freq = rospy.get_param('~hz', 600)
+    self.freq = rospy.get_param('~hz', 500)
     rate = rospy.Rate(self.freq)
 
     while not rospy.is_shutdown():
@@ -92,11 +92,14 @@ class Teleop:
       # publish command
       self.checkState()
       self.mapjs2master()
-      if self.isAbort or self.isEstop:
+      if self.isAbort:
         self.stopMotion()
       else:
-        # self.cmd = self.PDcontrol(self.js)
-        self.cmd = self.direct_vel_mapping()
+        # TODO: merge direct_vel_mapping with PDcontrol
+        if not self.isContact:
+          self.cmd = self.direct_vel_mapping()
+        elif self.isContact:
+          self.cmd = self.PDcontrol()
       if self.cmd:
         cmd_pub.publish(self.cmd)
       self.isContact_msg.data = self.isContact
@@ -106,16 +109,20 @@ class Teleop:
       rate.sleep()
 
   def checkState(self):
-    # switch between contact & non-contact mode
-    if self.js.buttons[10]:
-      if self.js.axes[0]+self.js.axes[1]+self.js.axes[4] < 0.05:
+    # switch to contact mode
+    if self.js.buttons[10] and not self.isContact:
+      if abs(self.js.axes[0]) < self.ax0dzone and abs(self.js.axes[1]) < self.ax1dzone and abs(self.js.axes[4]) < self.ax4dzone:
         self.isContact = not self.isContact
         print("Contact mode: ", self.isContact)
       else:
         print("Only switch contact mode at neutral position")
-
-    # abort if e-stop pressed
-    self.isEstop = self.js.buttons[1]
+    # switch to non-contact mode
+    if self.js.buttons[11] and self.isContact:
+      if abs(self.js.axes[0]) < self.ax0dzone and abs(self.js.axes[1]) < self.ax1dzone and abs(self.js.axes[4]) < self.ax4dzone:
+        self.isContact = not self.isContact
+        print("Contact mode: ", self.isContact)
+      else:
+        print("Only switch contact mode at neutral position")
 
     # abort if trigger pressed at non-neutral position
     self.triggerState = self.js.buttons[0]
@@ -128,7 +135,7 @@ class Teleop:
     # resume motion if js at neutral and commands are zeroed
     tol = 1e-5
     if self.isAbort:
-      if abs(self.js.axes[0]) < 0.05 and abs(self.js.axes[1]) < 0.05 and abs(self.js.axes[4]) < 0.05 \
+      if abs(self.js.axes[0]) < self.ax0dzone and abs(self.js.axes[1]) < self.ax1dzone and abs(self.js.axes[4]) < self.ax4dzone \
               and abs(self.cmd.linear.x < tol) and abs(self.cmd.linear.y < tol) and abs(self.cmd.linear.z < tol) \
               and abs(self.cmd.angular.x < tol) and abs(self.cmd.angular.y < tol) and abs(self.cmd.angular.z < tol):
         print("Ready to move!")
@@ -158,12 +165,9 @@ class Teleop:
         self.curr_master.angular.z = self.curr_slave.angular.z + \
             sAng[2]*self.js.axes[4]*(self.force_sum < self.force_max)
       else:
-        self.curr_master.angular.x = self.curr_slave.angular.x + \
-            sAng[0]*self.js.axes[0]
-        self.curr_master.angular.y = self.curr_slave.angular.y + \
-            sAng[1]*self.js.axes[1]
-        self.curr_master.angular.z = self.curr_slave.angular.z + \
-            sAng[2]*self.js.axes[4]
+        self.curr_master.angular.x = self.curr_slave.angular.x + sAng[0]*self.js.axes[0]
+        self.curr_master.angular.y = self.curr_slave.angular.y + sAng[1]*self.js.axes[1]
+        self.curr_master.angular.z = self.curr_slave.angular.z + sAng[2]*self.js.axes[4]
       self.curr_master.linear.x = self.curr_slave.linear.x
       self.curr_master.linear.y = self.curr_slave.linear.y
       self.curr_master.linear.z = self.curr_slave.linear.z
@@ -178,20 +182,15 @@ class Teleop:
             (stiff[2]*force_error+dampz*force_error_d)*Vz[2]
         # print(self.curr_master.linear.z)
       else:
-        self.curr_master.linear.x = self.curr_slave.linear.x + \
-            (sLin[0]*self.js.axes[1])
-        self.curr_master.linear.y = self.curr_slave.linear.y - \
-            (sLin[1]*self.js.axes[0])
-        self.curr_master.linear.z = self.curr_slave.linear.z - \
-            (sLin[2]*self.js.axes[4])
+        self.curr_master.linear.x = self.curr_slave.linear.x + (sLin[0]*self.js.axes[1])
+        self.curr_master.linear.y = self.curr_slave.linear.y - (sLin[1]*self.js.axes[0])
+        self.curr_master.linear.z = self.curr_slave.linear.z - (sLin[2]*self.js.axes[4])
       self.curr_master.angular.x = self.curr_slave.angular.x
       self.curr_master.angular.y = self.curr_slave.angular.y
       self.curr_master.angular.z = self.curr_slave.angular.z
 
-  def PDcontrol(self, js_msg):
-    '''
-    velocity command: u = Kp*(Xm-Xs)
-    '''
+  def PDcontrol(self):
+    '''velocity command: u = Kp*(Xm-Xs)'''
     # TODO: separate remove residual function
     u = Twist()
     # linear
@@ -199,13 +198,13 @@ class Teleop:
     u.linear.y = 1.2*(self.curr_master.linear.y - self.curr_slave.linear.y)
     u.linear.z = 1.5*(self.curr_master.linear.z - self.curr_slave.linear.z)
     # angular
-    u.angular.x = 0.0 if abs(js_msg.axes[0]) < self.ax0deadzone else 2.8 * \
-        (self.curr_master.angular.x - self.curr_slave.angular.x)
-    u.angular.y = 0.0 if abs(js_msg.axes[1]) < self.ax1deadzone else \
-        3.0*(self.curr_master.angular.y - self.curr_slave.angular.y)
-    u.angular.z = 0.0 if abs(js_msg.axes[4]) < self.ax4deadzone else \
-        4.0*(self.curr_master.angular.z - self.curr_slave.angular.z)
+    u.angular.x = 2.8*(self.curr_master.angular.x - self.curr_slave.angular.x)
+    u.angular.y = 3.0*(self.curr_master.angular.y - self.curr_slave.angular.y)
+    u.angular.z = 4.0*(self.curr_master.angular.z - self.curr_slave.angular.z)
     # get rid of small motion
+    u.angular.x = 0.0 if abs(u.angular.x) < 1e-7 else u.angular.x
+    u.angular.y = 0.0 if abs(u.angular.y) < 1e-7 else u.angular.y
+    u.angular.z = 0.0 if abs(u.angular.z) < 1e-7 else u.angular.z
     u.linear.x = 0.0 if abs(u.linear.x) < 1e-7 else u.linear.x
     u.linear.y = 0.0 if abs(u.linear.y) < 1e-7 else u.linear.y
     u.linear.z = 0.0 if abs(u.linear.z) < 1e-7 else u.linear.z
@@ -245,18 +244,12 @@ class Teleop:
     # decrease velocity command to 0
     incre = 2e-4
     tol = 1e-5
-    self.cmd.linear.x -= math.copysign(incre, self.cmd.linear.x) \
-        if abs(self.cmd.linear.x) > tol else 0.0
-    self.cmd.linear.y -= math.copysign(incre, self.cmd.linear.y) \
-        if abs(self.cmd.linear.y) > tol else 0.0
-    self.cmd.linear.z -= math.copysign(incre, self.cmd.linear.z) \
-        if abs(self.cmd.linear.z) > tol else 0.0
-    self.cmd.angular.x -= math.copysign(incre, self.cmd.angular.x) \
-        if abs(self.cmd.angular.x) > tol else 0.0
-    self.cmd.angular.y -= math.copysign(incre, self.cmd.angular.y) \
-        if abs(self.cmd.angular.y) > tol else 0.0
-    self.cmd.angular.z -= math.copysign(incre, self.cmd.angular.z) \
-        if abs(self.cmd.angular.z) > tol else 0.0
+    self.cmd.linear.x -= math.copysign(incre, self.cmd.linear.x) if abs(self.cmd.linear.x) > tol else 0.0
+    self.cmd.linear.y -= math.copysign(incre, self.cmd.linear.y) if abs(self.cmd.linear.y) > tol else 0.0
+    self.cmd.linear.z -= math.copysign(incre, self.cmd.linear.z) if abs(self.cmd.linear.z) > tol else 0.0
+    self.cmd.angular.x -= math.copysign(incre, self.cmd.angular.x) if abs(self.cmd.angular.x) > tol else 0.0
+    self.cmd.angular.y -= math.copysign(incre, self.cmd.angular.y) if abs(self.cmd.angular.y) > tol else 0.0
+    self.cmd.angular.z -= math.copysign(incre, self.cmd.angular.z) if abs(self.cmd.angular.z) > tol else 0.0
 
   def js_callback(self, js_msg):
     self.js = js_msg
@@ -267,12 +260,9 @@ class Teleop:
 
   def force_callback(self, FT_msg):
     self.wrench_slave_old = self.wrench_slave
-    self.wrench_slave.force.x = 0.0 if FT_msg.wrench.force.x < 0 \
-        else FT_msg.wrench.force.x
-    self.wrench_slave.force.y = 0.0 if FT_msg.wrench.force.y < 0 \
-        else FT_msg.wrench.force.y
-    self.wrench_slave.force.z = 0.0 if FT_msg.wrench.force.z < 0 \
-        else FT_msg.wrench.force.z
+    self.wrench_slave.force.x = 0.0 if FT_msg.wrench.force.x < 0 else FT_msg.wrench.force.x
+    self.wrench_slave.force.y = 0.0 if FT_msg.wrench.force.y < 0 else FT_msg.wrench.force.y
+    self.wrench_slave.force.z = 0.0 if FT_msg.wrench.force.z < 0 else FT_msg.wrench.force.z
 
   def rot2rpy(self, R):
     sy = math.sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
@@ -289,4 +279,5 @@ class Teleop:
 
 
 if __name__ == "__main__":
-  Teleop()
+  teleop_obj = Teleop()
+  teleop_obj.doTeleop()
