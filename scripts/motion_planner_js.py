@@ -53,7 +53,8 @@ class Teleop:
 
   def doTeleop(self):
     # ROS stuff
-    cmd_pub = rospy.Publisher('franka_cmd_acc', Twist, queue_size=1)
+    cmd_pub = rospy.Publisher('cmd_js', Twist, queue_size=1)
+    # cmd_pub = rospy.Publisher('franka_cmd_acc', Twist, queue_size=1)
     contact_mode_pub = rospy.Publisher('isContact', Bool, queue_size=1)
     rospy.Subscriber("joy", Joy, self.js_callback)
     rospy.Subscriber('franka_state_controller/franka_states', FrankaState, self.ee_callback)

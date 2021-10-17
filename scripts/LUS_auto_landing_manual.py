@@ -16,8 +16,7 @@ from pyrealsense2 import pyrealsense2 as rs
 def ee_callback(msg):
   EE_pos = msg.O_T_EE_d  # inv 4x4 matrix
   global T_O_ee
-  T_O_ee = np.array([EE_pos[0:4], EE_pos[4:8], EE_pos[8:12],
-                     EE_pos[12:16]]).transpose()
+  T_O_ee = np.array([EE_pos[0:4], EE_pos[4:8], EE_pos[8:12], EE_pos[12:16]]).transpose()
 
 
 def js_callback(msg):
@@ -222,7 +221,6 @@ def main():
   try:
     while True:
       col_vec, row_vec = ROIshape(pix_tar)
-      # Wait for a coherent pair of frames: depth and color
       frames = pipeline.wait_for_frames()
 
       # align depth to color frame
@@ -256,12 +254,9 @@ def main():
         depth_pixel = [curr_col, curr_row]
         depth_in_met = depth_frame.as_depth_frame().get_distance(curr_col, curr_row)
         # deprojection
-        x = rs.rs2_deproject_pixel_to_point(
-            depth_intrin, depth_pixel, depth_in_met)[0]
-        y = rs.rs2_deproject_pixel_to_point(
-            depth_intrin, depth_pixel, depth_in_met)[1]
-        z = rs.rs2_deproject_pixel_to_point(
-            depth_intrin, depth_pixel, depth_in_met)[2]
+        x = rs.rs2_deproject_pixel_to_point(depth_intrin, depth_pixel, depth_in_met)[0]
+        y = rs.rs2_deproject_pixel_to_point(depth_intrin, depth_pixel, depth_in_met)[1]
+        z = rs.rs2_deproject_pixel_to_point(depth_intrin, depth_pixel, depth_in_met)[2]
         point_x[pnt] = x
         point_y[pnt] = y
         point_z[pnt] = z
@@ -281,10 +276,8 @@ def main():
       pose_err = np.subtract(curr_goal, T_O_ee[:3, :4])
       trans_error = pose_err[:, -1]
       rot_error = pose_err[:, :3].flatten()
-      isReachedTrans = True if \
-          all([abs(err) < 0.0035 for err in trans_error]) else False
-      isReachedRot = True if \
-          all([abs(err) < 0.08 for err in rot_error]) else False
+      isReachedTrans = True if all([abs(err) < 0.0035 for err in trans_error]) else False
+      isReachedRot = True if all([abs(err) < 0.08 for err in rot_error]) else False
       if isReachedRot and isReachedTrans and op_mode == 'auto':
         # if op_mode == 'auto':
         print("arrive at target ", tar_togo-1, " switch to manual")
@@ -294,7 +287,7 @@ def main():
         #     print("arrive home")
         #     op_mode = 'tele'
 
-        # keyboard control
+      # keyboard control
       key = cv2.waitKey(1)
       if key & 0xFF == ord('q') or key == 27:
         print('quit')
@@ -328,19 +321,17 @@ def main():
         cmd_pos_msg.data = T_O_home[:3, :4].transpose().flatten()
 
       elif key == ord('w'):
-        pix_tar[1] = pix_tar[1] - 15 if pix_tar[1] > 0 else pix_tar[1]
+        pix_tar[1] = pix_tar[1] - 10 if pix_tar[1]-20 > 0 else pix_tar[1]
         print('move up', pix_tar)
       elif key == ord('a'):
-        pix_tar[0] = pix_tar[0] - 15 if pix_tar[0] > 0 else pix_tar[0]
+        pix_tar[0] = pix_tar[0] - 10 if pix_tar[0]-20 > 0 else pix_tar[0]
         print('move left', pix_tar)
       elif key == ord('s'):
-        pix_tar[1] = pix_tar[1] + \
-            15 if pix_tar[1] < 480-15 else pix_tar[1]
+        pix_tar[1] = pix_tar[1] + 10 if pix_tar[1]+20 < 480 else pix_tar[1]
         print('move down', pix_tar)
       elif key == ord('d'):
-        pix_tar[0] = pix_tar[0] + \
-            15 if pix_tar[0] < 640-30 else pix_tar[0]
         print('move right', pix_tar)
+        pix_tar[0] = pix_tar[0] + 10 if pix_tar[0]+20 < 640 else pix_tar[0]
 
       if op_mode == 'auto' or op_mode == 'home':
         # cmd_acc_msg.linear.x = float('nan')
