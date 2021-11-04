@@ -48,7 +48,7 @@ class Teleop:
     self.triggerStateOld = False
     self.wrench_slave = Wrench()
     self.wrench_slave_old = Wrench()
-    self.force_des = 3.0  # max contact force [N]
+    self.force_des = 3.5  # max contact force [N]
     self.force_max = 8.0
 
   def doTeleop(self):

@@ -212,6 +212,3 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-
-add_executable(readJs_raw src/readJs_raw.cpp)
-target_link_libraries(readJs_raw ${catkin_LIBRARIES})
