@@ -328,7 +328,7 @@ def main():
   point_y = []
   point_z = []
 
-  path2file = '/home/xihan/catkin_ws/src/robotic_ultrasound/franka-ultrasound/scripts/DP2normal.csv'
+  path2file = '/home/xihan/catkin_ws/src/robotic_ultrasound/franka-ultrasound/data/DP2normal.csv'
   file_out = open(path2file, 'w')
   writer = csv.writer(file_out)
   isRecoding = False
