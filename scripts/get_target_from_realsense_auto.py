@@ -55,8 +55,7 @@ def divide2region(IUV_chest, target_u, target_v):
 
 def createMask(IUV_chest, frame):
   opacity = 0.35
-  mask = np.zeros(
-      (IUV_chest.shape[0], IUV_chest.shape[1], IUV_chest.shape[2]))
+  mask = np.zeros((IUV_chest.shape[0], IUV_chest.shape[1], IUV_chest.shape[2]))
   mask[:, :, 2] = IUV_chest[:, :, 0]*110
   overlay = cv2.addWeighted(mask, opacity, frame, 1.-opacity, -10., dtype=1)
   return overlay
@@ -180,8 +179,7 @@ def calc_pose(point_x, point_y, point_z):
     T_O_tar = float('nan')*np.ones([4, 4])
 
   # print(T_O_tar)
-  tar_packed = np.transpose(
-      np.array([T_O_tar[0], T_O_tar[1], T_O_tar[2]])).flatten()
+  tar_packed = np.transpose(np.array([T_O_tar[0], T_O_tar[1], T_O_tar[2]])).flatten()
   return tar_packed
 
 
@@ -368,8 +366,7 @@ def main():
         IUV_chest = getBodyPart(inferred)
         for currRegionID in range(len(target_u)):
           curr_tar = [target_u[currRegionID], target_v[currRegionID]]
-          target_pix = divide2region(
-              IUV_chest, curr_tar[0], curr_tar[1])
+          target_pix = divide2region(IUV_chest, curr_tar[0], curr_tar[1])
           if np.isin(-1, target_pix, invert=True):
             col_vec, row_vec = ROIshape(target_pix)
 
@@ -387,25 +384,18 @@ def main():
                 try:
                   depth_in_met = depth_frame.as_depth_frame().get_distance(curr_col, curr_row)
                   # deprojection
-                  x = rs.rs2_deproject_pixel_to_point(
-                      depth_intrin, [curr_col, curr_row], depth_in_met)[0]
-                  y = rs.rs2_deproject_pixel_to_point(
-                      depth_intrin, [curr_col, curr_row], depth_in_met)[1]
-                  z = rs.rs2_deproject_pixel_to_point(
-                      depth_intrin, [curr_col, curr_row], depth_in_met)[2]
+                  x = rs.rs2_deproject_pixel_to_point(depth_intrin, [curr_col, curr_row], depth_in_met)[0]
+                  y = rs.rs2_deproject_pixel_to_point(depth_intrin, [curr_col, curr_row], depth_in_met)[1]
+                  z = rs.rs2_deproject_pixel_to_point(depth_intrin, [curr_col, curr_row], depth_in_met)[2]
                   point_x.append(x)
                   point_y.append(y)
                   point_z.append(z)
                 except:
                   continue
 
-              cv2.circle(color_image,
-                         (target_pix[0], target_pix[1]),
-                         15, (200, 200, 200), -1)
-              cv2.putText(color_image, str(currRegionID+1),
-                          (target_pix[0], target_pix[1]),
-                          cv2.FONT_HERSHEY_SIMPLEX,
-                          0.5, (1, 100, 1), thickness=2)
+              cv2.circle(color_image, (target_pix[0], target_pix[1]), 15, (200, 200, 200), -1)
+              cv2.putText(color_image, str(currRegionID+1), (target_pix[0], target_pix[1]),
+                          cv2.FONT_HERSHEY_SIMPLEX, 0.5, (1, 100, 1), thickness=2)
 
               norm_vec = getSurfaceNormal(
                   point_x, point_y, point_z)
