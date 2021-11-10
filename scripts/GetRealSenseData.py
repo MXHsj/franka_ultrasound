@@ -3,6 +3,7 @@ import sys
 import numpy as np
 from cv2 import cv2
 import open3d as o3d
+from GetSurfaceNorm import *
 from pyrealsense2 import pyrealsense2 as rs
 
 
@@ -86,7 +87,7 @@ class GetRealSenseData():
     depth_frame = rs.disparity_transform(False).process(depth_frame)
     return depth_frame
 
-  def getPoint(self, depth_frame, pixels, flatten_out=False):
+  def get_xyz(self, depth_frame, pixels, flatten_out=False):
     depth_intrin = depth_frame.profile.as_video_stream_profile().intrinsics
     points = []
     for i in range(len(pixels)):
@@ -102,6 +103,10 @@ class GetRealSenseData():
     if flatten_out:
       points_formatted = np.array(points).flatten()
     return points_formatted
+
+  def get_normal(self, pixel):
+    # TODO: complete this method
+    pass
 
 
 # exit

@@ -27,8 +27,7 @@ def msg2matrix(raw_msg):
 def ee_callback(msg):
   EE_pos = msg.O_T_EE_d  # inv 4x4 matrix
   global T_O_ee
-  T_O_ee = np.array([EE_pos[0:4], EE_pos[4:8], EE_pos[8:12],
-                     EE_pos[12:16]]).transpose()
+  T_O_ee = np.array([EE_pos[0:4], EE_pos[4:8], EE_pos[8:12], EE_pos[12:16]]).transpose()
 
 
 def force_callback(msg):
@@ -73,10 +72,8 @@ def isContact_callback(msg):
 
 
 rospy.Subscriber('keyboard_cmd', Int16, key_cmd_callback)
-rospy.Subscriber('franka_state_controller/franka_states',
-                 FrankaState, ee_callback)
-rospy.Subscriber('/franka_state_controller/F_ext',
-                 WrenchStamped, force_callback)
+rospy.Subscriber('franka_state_controller/franka_states', FrankaState, ee_callback)
+rospy.Subscriber('/franka_state_controller/F_ext', WrenchStamped, force_callback)
 rospy.Subscriber('/isContact', Bool, isContact_callback)
 
 rospy.Subscriber('reg1_target', Float64MultiArray, reg1_tar_callback)
