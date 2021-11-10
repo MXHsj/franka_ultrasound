@@ -158,7 +158,7 @@ spat_filter.set_option(rs.option.filter_smooth_delta, 50)
 
 
 isRecoding = False
-sample_size = 200
+sample_size = 100
 sample_count = 0
 print(" s->start recording \n e->end recording \n q->quit")
 try:
