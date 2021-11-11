@@ -1,5 +1,5 @@
 % ============================================ 
-% file name: densepose_validation.m
+% file name: validate_densepose.m
 % description: validate densepose
 % author: Xihan Ma
 % ============================================ 
@@ -62,15 +62,15 @@ reg4_xyz_err = zeros(nFrms,1);
 
 for i = frmOffset:frmOffset+nFrms-1
     % pix err
-    reg1_pix_err(i-frmOffset+1) = norm(dp_data.pix(i,:,1) - mk_pix_avg(4,:));
+    reg1_pix_err(i-frmOffset+1) = norm(dp_data.pix(i,:,4) - mk_pix_avg(1,:));
     reg2_pix_err(i-frmOffset+1) = norm(dp_data.pix(i,:,2) - mk_pix_avg(2,:));
     reg3_pix_err(i-frmOffset+1) = norm(dp_data.pix(i,:,3) - mk_pix_avg(3,:));
-    reg4_pix_err(i-frmOffset+1) = norm(dp_data.pix(i,:,4) - mk_pix_avg(1,:));
-    % xyz err
-    reg1_xyz_err(i-frmOffset+1) = norm(dp_data.xyz(i,:,1) - mk_xyz_avg(4,:));
-    reg2_xyz_err(i-frmOffset+1) = norm(dp_data.xyz(i,:,2) - mk_xyz_avg(2,:));
-    reg3_xyz_err(i-frmOffset+1) = norm(dp_data.xyz(i,:,3) - mk_xyz_avg(3,:));
-    reg4_xyz_err(i-frmOffset+1) = norm(dp_data.xyz(i,:,4) - mk_xyz_avg(1,:));
+    reg4_pix_err(i-frmOffset+1) = norm(dp_data.pix(i,:,1) - mk_pix_avg(4,:));
+    % xyz err (not taking z into consideration)
+    reg1_xyz_err(i-frmOffset+1) = norm(dp_data.xyz(i,1:2,4) - mk_xyz_avg(1,1:2));
+    reg2_xyz_err(i-frmOffset+1) = norm(dp_data.xyz(i,1:2,2) - mk_xyz_avg(2,1:2));
+    reg3_xyz_err(i-frmOffset+1) = norm(dp_data.xyz(i,1:2,3) - mk_xyz_avg(3,1:2));
+    reg4_xyz_err(i-frmOffset+1) = norm(dp_data.xyz(i,1:2,1) - mk_xyz_avg(4,1:2));
 end
 
 %% visualize densepose err
@@ -82,28 +82,29 @@ xlabel(ax1,'target ID')
 ylim([0, 30]); 
 ylabel(ax1,'error in image [pix]')
 ax1.YGrid = 'on';
-
+box on
 ax2 = nexttile;
 boxchart([reg1_xyz_err,reg2_xyz_err,reg3_xyz_err,reg4_xyz_err].*100)
 xlabel(ax2,'target ID')
-ylim([0, 5]); 
-ylabel(ax2,'error in xyz [cm]')
+ylim([0, 5]);
+ylabel(ax2,'error in xy [cm]')
 ax2.YGrid = 'on';
+box on
 
 %%
 % rgb = imread('../data/mk_frame.png');
 rgb = imread('../data/color_frame.png');
 figure('Position',[1920/3,1080/3,640,640])
-imagesc(rgb); axis off
+imagesc(rgb); axis on
 hold on
-scatter(mk_pix_avg(1,1),mk_pix_avg(1,2),60,[0 0.4470 0.7410],'d','filled')
-scatter(mk_pix_avg(2,1),mk_pix_avg(2,2),60,[0.8500 0.3250 0.0980],'d','filled')
-scatter(mk_pix_avg(3,1),mk_pix_avg(3,2),60,[0.9290 0.6940 0.1250],'d','filled')
-scatter(mk_pix_avg(4,1),mk_pix_avg(4,2),60,[0.4940 0.1840 0.5560],'d','filled')
+scatter(mk_pix_avg(1,1),mk_pix_avg(1,2),50,[0 0.4470 0.7410],'d','filled')
+scatter(mk_pix_avg(2,1),mk_pix_avg(2,2),50,[0.8500 0.3250 0.0980],'d','filled')
+scatter(mk_pix_avg(3,1),mk_pix_avg(3,2),50,[0.9290 0.6940 0.1250],'d','filled')
+scatter(mk_pix_avg(4,1),mk_pix_avg(4,2),50,[0.4940 0.1840 0.5560],'d','filled')
 
-scatter(dp_data.pix(1,1,4),dp_data.pix(1,2,4),80,[0.1 0.5470 0.6410],'x','LineWidth',1.5)
-scatter(dp_data.pix(1,1,2),dp_data.pix(1,2,2),80,[0.7500 0.4250 0.0880],'x','LineWidth',1.5)
-scatter(dp_data.pix(1,1,3),dp_data.pix(1,2,3),80,[0.8290 0.7940 0.1150],'x','LineWidth',1.5)
-scatter(dp_data.pix(1,1,1),dp_data.pix(1,2,1),80,[0.5940 0.2840 0.4560],'x','LineWidth',1.5)
+scatter(dp_data.pix(:,1,4),dp_data.pix(:,2,4),60,[0.2 0.6470 0.5410],'.','LineWidth',.5)
+scatter(dp_data.pix(:,1,2),dp_data.pix(:,2,2),60,[0.8500 0.5250 0.1880],'.','LineWidth',.5)
+scatter(dp_data.pix(:,1,3),dp_data.pix(:,2,3),60,[0.7290 0.8940 0.2150],'.','LineWidth',.5)
+scatter(dp_data.pix(:,1,1),dp_data.pix(:,2,1),60,[0.4940 0.3840 0.5560],'.','LineWidth',.5)
 
 legend('target1 ref','target2 ref','target3 ref','target4 ref','target1','target2','target3','target4')

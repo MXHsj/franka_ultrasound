@@ -1,4 +1,4 @@
-% remove bad data in a row
+%% remove bad data in a row (containing -1)
 function data = removeBadData(data_raw)
 
 data = data_raw;
