@@ -2,7 +2,8 @@
 % author: Jakub
 clc; clear; close all
 
-eef_length = 295;      % jakub robotic US eef: 295
+% eef_length = 295;      % jakub robotic US eef
+eef_length = 259.6;    % clarius US eef
 
 matr_2 = eye(4);
 matr_2(3,4) = -242.30 - eef_length;
