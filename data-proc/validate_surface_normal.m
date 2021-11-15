@@ -8,16 +8,17 @@ clc; clear; close all;
 
 dir1 = '../data/surface_normal/11-15-2021-reg1-surf_norm.csv';
 dir2 = '../data/surface_normal/11-10-2021-reg2-surf_norm.csv';
-dir3 = '../data/surface_normal/11-15-2021-reg3-surf_norm.csv';
-dir4 = '../data/surface_normal/11-15-2021-reg4-surf_norm.csv';
-dir5 = '../data/surface_normal/11-10-2021-reg5-surf_norm.csv';
-dir6 = '../data/surface_normal/11-15-2021-reg6-surf_norm.csv';
-dir7 = '../data/surface_normal/11-15-2021-reg7-surf_norm.csv';
-dir8 = '../data/surface_normal/11-15-2021-reg8-surf_norm.csv';
-dir9 = '../data/surface_normal/11-10-2021-reg9-surf_norm.csv';
-dir10 = '../data/surface_normal/11-10-2021-reg10-surf_norm.csv';
+dir3 = '../data/surface_normal/11-15-2021-reg7-surf_norm.csv';
+dir4 = '../data/surface_normal/11-15-2021-reg8-surf_norm.csv';
+dir5 = '../data/surface_normal/11-10-2021-reg3-surf_norm.csv';
+dir6 = '../data/surface_normal/11-15-2021-reg4-surf_norm.csv';
+dir7 = '../data/surface_normal/11-15-2021-reg9-surf_norm.csv';
+dir8 = '../data/surface_normal/11-15-2021-reg10-surf_norm.csv';
+dir9 = '../data/surface_normal/11-10-2021-reg5-surf_norm.csv';
+dir10 = '../data/surface_normal/11-10-2021-reg6-surf_norm.csv';
 dir11 = '../data/surface_normal/11-10-2021-reg11-surf_norm.csv';
 dir12 = '../data/surface_normal/11-10-2021-reg12-surf_norm.csv';
+
 
 data1_raw = csvread(dir1); data1 = removeBadData(data1_raw);
 data2_raw = csvread(dir2); data2 = removeBadData(data2_raw);
@@ -220,7 +221,7 @@ xlabel('HORIZ')
 xticklabels({'4','3','2','1'})
 ylabel('VERT')
 zlabel('translation error [mm]')
-view([37.5,30])
+view([37.5,45])
 
 % rotation
 subplot(2,1,2)
@@ -245,75 +246,26 @@ xlabel('HORIZ')
 xticklabels({'4','3','2','1'})
 ylabel('VERT')
 zlabel('rotation error [rad]')
-view([37.5,30])
-
+view([37.5,45])
 set(gcf, 'Position',  [500, 200, 350, 550])
 
-%% 2D subplots
-% rotation
-figure('Position',[1920/3,1080/3,640,480])
-tlo = tiledlayout(3,4);
-rax1 = nexttile; plot(rot_errs(:,1)); xlim([0 50])
-rax2 = nexttile; plot(rot_errs(:,2)); xlim([0 50])
-rax3 = nexttile; plot(rot_errs(:,7)); xlim([0 50])
-rax4 = nexttile; plot(rot_errs(:,8)); xlim([0 50])
-rax5 = nexttile; plot(rot_errs(:,3)); xlim([0 50])
-rax6 = nexttile; plot(rot_errs(:,4)); xlim([0 50])
-rax7 = nexttile; plot(rot_errs(:,9)); xlim([0 50])
-rax8 = nexttile; plot(rot_errs(:,10)); xlim([0 50])
-rax9 = nexttile; plot(rot_errs(:,5)); xlim([0 50])
-rax10 = nexttile; plot(rot_errs(:,6)); xlim([0 50])
-rax11 = nexttile; plot(rot_errs(:,11)); xlim([0 50])
-rax12 = nexttile; plot(rot_errs(:,12)); xlim([0 50])
-xlabel(tlo, 'frame')
-ylabel(tlo, 'rotation error [rad]')
-
-% translation
-figure('Position',[1920/3,1080/3,640,480])
-tlo = tiledlayout(3,4);
-tax1 = nexttile; plot(trans_errs(:,1)); xlim([0 50])
-tax2 = nexttile; plot(trans_errs(:,2)); xlim([0 50])
-tax3 = nexttile; plot(trans_errs(:,7)); xlim([0 50])
-tax4 = nexttile; plot(trans_errs(:,8)); xlim([0 50])
-tax5 = nexttile; plot(trans_errs(:,3)); xlim([0 50])
-tax6 = nexttile; plot(trans_errs(:,4)); xlim([0 50])
-tax7 = nexttile; plot(trans_errs(:,9)); xlim([0 50])
-tax8 = nexttile; plot(trans_errs(:,10)); xlim([0 50])
-tax9 = nexttile; plot(trans_errs(:,5)); xlim([0 50])
-tax10 = nexttile; plot(trans_errs(:,6)); xlim([0 50])
-tax11 = nexttile; plot(trans_errs(:,11)); xlim([0 50])
-tax12 = nexttile; plot(trans_errs(:,12)); xlim([0 50])
-xlabel(tlo, 'frame')
-ylabel(tlo, 'translation error [mm]')
-
-
 %% 2D subplots translation + rotation
-figure('Position',[1920/3,1080/3,400,500])
-tlo = tiledlayout(3,1);
+figure('Position',[1920/3,1080/3,350*2,400])
+tlo = tiledlayout(3,4);
 
-rax1 = nexttile; 
+for i = 1:12
+ax = nexttile;
 yyaxis left
-boxchart([rot_errs(:,1),rot_errs(:,2),rot_errs(:,7),rot_errs(:,8)],'JitterOutliers','on','MarkerStyle','.'); 
-ylabel('[rad]'); ylim([0,0.75]);
+boxchart([rot_errs(:,i),NaN(nKept,1)],'JitterOutliers','on','MarkerStyle','.')
+if i == 5
+    ylabel('[rad]');
+end
+ylim([0,0.55]);
 yyaxis right
-boxchart([trans_errs(:,1),trans_errs(:,2),trans_errs(:,7),trans_errs(:,8)],'JitterOutliers','on','MarkerStyle','.'); 
-set(gca,'Xticklabel',{'1','2','7','8'}); rax1.YGrid = 'on';
-ylabel('[mm]'); ylim([0, inf]);
-
-rax2 = nexttile;
-yyaxis left
-boxchart([rot_errs(:,3),rot_errs(:,4),rot_errs(:,9),rot_errs(:,10)],'JitterOutliers','on','MarkerStyle','.');
-ylabel('[rad]'); ylim([0,0.75]);
-yyaxis right
-boxchart([trans_errs(:,3),trans_errs(:,4),trans_errs(:,9),trans_errs(:,10)],'JitterOutliers','on','MarkerStyle','.'); 
-set(gca,'Xticklabel',{'3','4','9','10'}); ylim([0,inf]); rax2.YGrid = 'on';
-ylabel('[mm]'); ylim([0, inf]);
-
-rax3 = nexttile; 
-yyaxis left
-boxchart([rot_errs(:,5),rot_errs(:,6),rot_errs(:,11),rot_errs(:,12)],'JitterOutliers','on','MarkerStyle','.'); 
-ylabel('[rad]'); ylim([0,0.75]);
-yyaxis right
-boxchart([trans_errs(:,5),trans_errs(:,6),trans_errs(:,11),trans_errs(:,12)],'JitterOutliers','on','MarkerStyle','.'); 
-set(gca,'Xticklabel',{'5','6','11','12'}); ylim([0,inf]); rax3.YGrid = 'on';
-ylabel('[mm]'); ylim([0, inf]);
+boxchart([NaN(nKept,1),trans_errs(:,i)],'JitterOutliers','on','MarkerStyle','.')
+if i == 8
+    ylabel('[mm]');
+end
+ylim([0, 10]);
+set(gca,'xtick',[]); ax.YGrid = 'on'; 
+end
