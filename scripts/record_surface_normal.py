@@ -3,6 +3,7 @@
 experimenting deprojection in realsense SDK
 '''
 import csv
+import time
 import numpy as np
 from cv2 import cv2
 from cv2 import aruco
@@ -114,7 +115,7 @@ def my_floor(a, precision=0):
   return np.round(a - 0.5 * 10**(-precision), precision)
 
 
-def ROIshape(center, side=14):
+def ROIshape(center, side=12):
   # square region
   col_vec = [center[0],
              center[0]-side/2,
@@ -162,7 +163,7 @@ sample_size = 200
 sample_count = 0
 print(" s->start recording \n e->end recording \n q->quit")
 try:
-  with open('../data/surface_normal.csv', 'w') as file_out:
+  with open('../data/surface_normal/surface_normal.csv', 'w') as file_out:
     writer = csv.writer(file_out)
     while sample_count < sample_size:
       # Wait for a coherent pair of frames: depth and color
@@ -266,7 +267,7 @@ try:
       elif key == ord('e'):
         isRecoding = False
         print('end recoding data')
-
+      # time.sleep(0.2)
 finally:
   print("Finished.")
   # Stop streaming

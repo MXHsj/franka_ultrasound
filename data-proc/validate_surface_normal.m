@@ -9,11 +9,11 @@ clc; clear; close all;
 dir1 = '../data/surface_normal/11-15-2021-reg1-surf_norm.csv';
 dir2 = '../data/surface_normal/11-10-2021-reg2-surf_norm.csv';
 dir3 = '../data/surface_normal/11-15-2021-reg3-surf_norm.csv';
-dir4 = '../data/surface_normal/11-10-2021-reg4-surf_norm.csv';
+dir4 = '../data/surface_normal/11-15-2021-reg4-surf_norm.csv';
 dir5 = '../data/surface_normal/11-10-2021-reg5-surf_norm.csv';
-dir6 = '../data/surface_normal/11-10-2021-reg6-surf_norm.csv';
+dir6 = '../data/surface_normal/11-15-2021-reg6-surf_norm.csv';
 dir7 = '../data/surface_normal/11-15-2021-reg7-surf_norm.csv';
-dir8 = '../data/surface_normal/11-10-2021-reg8-surf_norm.csv';
+dir8 = '../data/surface_normal/11-15-2021-reg8-surf_norm.csv';
 dir9 = '../data/surface_normal/11-10-2021-reg9-surf_norm.csv';
 dir10 = '../data/surface_normal/11-10-2021-reg10-surf_norm.csv';
 dir11 = '../data/surface_normal/11-10-2021-reg11-surf_norm.csv';
@@ -46,7 +46,7 @@ data10 = data10(1:nKept*3,:);
 data11 = data11(1:nKept*3,:);
 data12 = data12(1:nKept*3,:);
 
-%% calculate errors
+% calculate errors
 % rotation
 est_vec1 = [data1(1:3:end-2,10),data1(2:3:end-1,10),data1(3:3:end,10)];
 gt_vec1 = [(data1(1:3:end-2,11)),data1(2:3:end-1,11),data1(3:3:end,11)];
@@ -298,16 +298,16 @@ ylabel('[rad]'); ylim([0,0.75]);
 yyaxis right
 boxchart([trans_errs(:,1),trans_errs(:,2),trans_errs(:,7),trans_errs(:,8)],'JitterOutliers','on','MarkerStyle','.'); 
 set(gca,'Xticklabel',{'1','2','7','8'}); rax1.YGrid = 'on';
-ylabel('[mm]'); ylim([0, 20]);
+ylabel('[mm]'); ylim([0, inf]);
 
-rax2 = nexttile; 
+rax2 = nexttile;
 yyaxis left
 boxchart([rot_errs(:,3),rot_errs(:,4),rot_errs(:,9),rot_errs(:,10)],'JitterOutliers','on','MarkerStyle','.');
 ylabel('[rad]'); ylim([0,0.75]);
 yyaxis right
 boxchart([trans_errs(:,3),trans_errs(:,4),trans_errs(:,9),trans_errs(:,10)],'JitterOutliers','on','MarkerStyle','.'); 
 set(gca,'Xticklabel',{'3','4','9','10'}); ylim([0,inf]); rax2.YGrid = 'on';
-ylabel('[mm]'); ylim([0, 20]);
+ylabel('[mm]'); ylim([0, inf]);
 
 rax3 = nexttile; 
 yyaxis left
@@ -316,4 +316,4 @@ ylabel('[rad]'); ylim([0,0.75]);
 yyaxis right
 boxchart([trans_errs(:,5),trans_errs(:,6),trans_errs(:,11),trans_errs(:,12)],'JitterOutliers','on','MarkerStyle','.'); 
 set(gca,'Xticklabel',{'5','6','11','12'}); ylim([0,inf]); rax3.YGrid = 'on';
-ylabel('[mm]'); ylim([0, 20]);
+ylabel('[mm]'); ylim([0, inf]);
