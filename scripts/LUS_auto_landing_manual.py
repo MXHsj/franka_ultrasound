@@ -64,7 +64,7 @@ def calc_pose(point_x, point_y, point_z):
     T_O_tar = convert2base(T_cam_tar)
   else:
     T_O_tar = float('nan')*np.ones([4, 4])
-  print(T_O_tar)
+  print('T_O_tar \n', T_O_tar)
   tar_packed = T_O_tar[:3, :4].transpose().flatten()
   return tar_packed
   # return T_O_tar.flatten()
@@ -153,10 +153,19 @@ T_O_home = np.array([[0.06194, -0.99796, -0.01534, 0.0],
                      [0.24109, 0.04896, 0.27874, 1.0]]).transpose()
 
 # transformation from custom eef to camera [m]
-T_ee_cam = np.array([[1.000, 0.0, 0.0, -0.0175],
-                     [0.0, 0.9239, -0.3827, -0.0886180],
-                     [0.0, 0.3827, 0.9239, -0.3233572],
-                     [0.0, 0.0, 0.0, 1.0]])
+eef_id = 1
+if eef_id == 0:
+  # Jakub eef
+  T_ee_cam = np.array([[1.000, 0.0, 0.0, -0.0175],
+                      [0.0, 0.9239, -0.3827, -0.0886180],
+                      [0.0, 0.3827, 0.9239, -0.3233572],
+                      [0.0, 0.0, 0.0, 1.0]])
+elif eef_id == 1:
+  # Clarius eef
+  T_ee_cam = np.array([[0.0, 0.0, 0.3827, 0.0886],
+                      [1.0, -0.9239, 0.0, -0.0175],
+                      [0.0, 0.3827, 0.9239, -0.2889],
+                      [0.0, 0.0, 0.0, 1.0]])
 # --------------------------------------------------------------------------
 
 rospy.Subscriber('franka_state_controller/franka_states',

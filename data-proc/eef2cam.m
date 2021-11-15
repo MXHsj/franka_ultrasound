@@ -20,3 +20,6 @@ m5 = m4*matr_5;
 
 % convert from mm to m
 m5(1:3,end) = m5(1:3,end)*1e-3
+
+% rotz = @(th) [cosd(th),-sind(th),0,0; sind(th),cosd(th),0,0;0,0,1,0;0,0,0,1]
+% m5*rotz(90)
