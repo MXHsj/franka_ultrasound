@@ -6,18 +6,18 @@
 %% read data
 clc; clear; close all;
 
-dir1 = '../data/11-10-2021-reg1-surf_norm.csv';
-dir2 = '../data/11-10-2021-reg2-surf_norm.csv';
-dir3 = '../data/11-10-2021-reg3-surf_norm.csv';
-dir4 = '../data/11-10-2021-reg4-surf_norm.csv';
-dir5 = '../data/11-10-2021-reg5-surf_norm.csv';
-dir6 = '../data/11-10-2021-reg6-surf_norm.csv';
-dir7 = '../data/11-10-2021-reg7-surf_norm.csv';
-dir8 = '../data/11-10-2021-reg8-surf_norm.csv';
-dir9 = '../data/11-10-2021-reg9-surf_norm.csv';
-dir10 = '../data/11-10-2021-reg10-surf_norm.csv';
-dir11 = '../data/11-10-2021-reg11-surf_norm.csv';
-dir12 = '../data/11-10-2021-reg12-surf_norm.csv';
+dir1 = '../data/surface_normal/11-15-2021-reg1-surf_norm.csv';
+dir2 = '../data/surface_normal/11-10-2021-reg2-surf_norm.csv';
+dir3 = '../data/surface_normal/11-15-2021-reg3-surf_norm.csv';
+dir4 = '../data/surface_normal/11-10-2021-reg4-surf_norm.csv';
+dir5 = '../data/surface_normal/11-10-2021-reg5-surf_norm.csv';
+dir6 = '../data/surface_normal/11-10-2021-reg6-surf_norm.csv';
+dir7 = '../data/surface_normal/11-15-2021-reg7-surf_norm.csv';
+dir8 = '../data/surface_normal/11-10-2021-reg8-surf_norm.csv';
+dir9 = '../data/surface_normal/11-10-2021-reg9-surf_norm.csv';
+dir10 = '../data/surface_normal/11-10-2021-reg10-surf_norm.csv';
+dir11 = '../data/surface_normal/11-10-2021-reg11-surf_norm.csv';
+dir12 = '../data/surface_normal/11-10-2021-reg12-surf_norm.csv';
 
 data1_raw = csvread(dir1); data1 = removeBadData(data1_raw);
 data2_raw = csvread(dir2); data2 = removeBadData(data2_raw);

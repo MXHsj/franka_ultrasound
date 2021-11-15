@@ -1,8 +1,8 @@
 %% visualize densepose
 clc; clear; close all
 
-RGB = imread('../data/color_frame.png');
-IUV = imread('../data/IUV.png');
+RGB = imread('../data/densepose/color_frame.png');
+IUV = imread('../data/densepose/IUV.png');
 
 % crop_v = 40; 
 % RGB = RGB(crop_v:end-crop_v, crop_v:end-crop_v,:);
