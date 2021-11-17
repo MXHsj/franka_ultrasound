@@ -22,10 +22,10 @@ V_chest_tar = np.array([255/2-30, 255/2+30, 255/2-30, 255/2+30,               # 
                         255/2-80, 255/2+80, 255/2-80, 255/2+80], dtype=int)   # lateral
 # U_chest_tar = np.array([60, 100, 60, 100])
 # V_chest_tar = np.array([155, 155, 105, 105])
-iuv_frm_path = os.path.join(os.path.dirname(__file__), '../data/IUV.png')
-dp_tar_path = os.path.join(os.path.dirname(__file__), '../data/dp_target_log.csv')
-color_frm_path = os.path.join(os.path.dirname(__file__), '../data/color_frame.png')
-depth_frm_path = os.path.join(os.path.dirname(__file__), '../data/depth_frame.png')
+iuv_frm_path = os.path.join(os.path.dirname(__file__), '../data/densepose/IUV.png')
+dp_tar_path = os.path.join(os.path.dirname(__file__), '../data/densepose/dp_target_log.csv')
+color_frm_path = os.path.join(os.path.dirname(__file__), '../data/densepose/color_frame.png')
+depth_frm_path = os.path.join(os.path.dirname(__file__), '../data/densepose/depth_frame.png')
 IUV = None
 
 

@@ -13,7 +13,7 @@ from GetRealSenseData import GetRealSenseData
 
 class TrackMarker:
   __detect_param = aruco.DetectorParameters_create()
-  save_path = os.path.join(os.path.dirname(__file__), '../data/marker_pos_log.csv')
+  save_path = os.path.join(os.path.dirname(__file__), '../data/densepose/marker_pos_log.csv')
 
   def __init__(self, num_mk=8, dict_id=6):
     if dict_id == 6:
@@ -81,6 +81,7 @@ class TrackMarker:
 
 
 def main():
+  frm_save_path = '../data/densepose/mk_frame.png'
   rs_obj = GetRealSenseData()
   mk_obj = TrackMarker(num_mk=4)
   cv2.namedWindow('realsense', cv2.WINDOW_AUTOSIZE)
@@ -104,7 +105,7 @@ def main():
     if key & 0xFF == ord('q') or key == 27 or frmCount >= nFrames:
       break
     elif key == ord('s'):
-      cv2.imwrite(os.path.join(os.path.dirname(__file__), '../data/mk_frame.png'), mk_obj.mk_bbox_frame)
+      cv2.imwrite(os.path.join(os.path.dirname(__file__), frm_save_path), mk_obj.mk_bbox_frame)
       print('marker frame saved')
     elapsed = time.time() - now
     time.sleep(freq-elapsed)
