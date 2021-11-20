@@ -43,8 +43,8 @@ def calc_pose(point_x, point_y, point_z):
     # x component
     # xx = math.cos(math.pi/6)                            # 1.0
     # yx = math.sin(math.pi/6)*math.cos(math.pi/8)        # 0.0
-    xx = 1.0
-    yx = 0.0
+    xx = 0.0
+    yx = -1.0*math.cos(math.pi/8)
     zx = -(Vz[1]*(yx-P0[1])+Vz[0]*(xx-P0[0]))/Vz[2]+P0[2]
     Vx = np.subtract([xx, yx, zx], P0)
     Vx = my_floor(Vx/np.linalg.norm(Vx), 3)
@@ -141,16 +141,16 @@ def my_floor(a, precision=0):
 # ---------------------constant transformations-----------------------------
 # transformation from base to eef
 # (data recorded at home pose, for debug purpose)
-T_O_ee = np.array([[-0.02406, -0.9997, -0.0001, 0.0],
-                   [-0.999, 0.02405, -0.0275, 0.0],
-                   [0.02751, -0.00055, -0.9996, 0.0],
-                   [0.26308, 0.025773, 0.2755, 1.0]]).transpose()
+T_O_ee = np.array([[0.0, -1.0, 0.0, 0.0],
+                   [-1.0, 0.0, 0.0, 0.0],
+                   [0.0, 0.0, -1.0, 0.0],
+                   [0.35, 0.0, 0.35, 1.0]]).transpose()
 # T_O_ee = None
 # home position
-T_O_home = np.array([[0.06194, -0.99796, -0.01534, 0.0],
-                     [-0.99806, -0.06200, 0.00357, 0.0],
-                     [-0.00451, 0.01509, -0.99987, 0.0],
-                     [0.24109, 0.04896, 0.27874, 1.0]]).transpose()
+T_O_home = np.array([[0.0, -1.0, 0.0, 0.0],
+                     [-1.0, 0.0, 0.0, 0.0],
+                     [0.0, 0.0, -1.0, 0.0],
+                     [0.45, 0.0, 0.35, 1.0]]).transpose()
 
 # transformation from custom eef to camera [m]
 eef_id = 1
@@ -162,28 +162,29 @@ if eef_id == 0:
                       [0.0, 0.0, 0.0, 1.0]])
 elif eef_id == 1:
   # Clarius eef
-  T_ee_cam = np.array([[0.0, 0.0, 0.3827, 0.0886],
-                      [1.0, -0.9239, 0.0, -0.0175],
-                      [0.0, 0.3827, 0.9239, -0.2889],
-                      [0.0, 0.0, 0.0, 1.0]])
+  T_ee_cam = np.array([[0.0, -0.9272, 0.3746, 0.0886],
+                       [1.0, 0.0, 0.0, -0.0175],
+                       [0.0, 0.3746, 0.9272, -0.2889],
+                       [0.0, 0.0, 0.0, 1.0]])
 # --------------------------------------------------------------------------
-
-rospy.Subscriber('franka_state_controller/franka_states',
-                 FrankaState, ee_callback)
-rospy.Subscriber('cmd_js', Twist, js_callback)
-
-scan_tar_pub = rospy.Publisher('scan_targets', Float64MultiArray, queue_size=1)
-cmd_pos_pub = rospy.Publisher('franka_cmd_pos', Float64MultiArray, queue_size=1)
-cmd_acc_pub = rospy.Publisher('franka_cmd_acc', Twist, queue_size=1)
-contact_mode_pub = rospy.Publisher('isContact', Bool, queue_size=1)
-
-scan_tar_msg = Float64MultiArray()
-cmd_pos_msg = Float64MultiArray()
-cmd_acc_msg = Twist()
-contact_mode_msg = Bool()
 
 
 def main():
+  rospy.init_node('LUS_auto_landing_manual', anonymous=True)
+  rospy.Subscriber('franka_state_controller/franka_states', FrankaState, ee_callback)
+  rospy.Subscriber('cmd_js', Twist, js_callback)
+
+  scan_tar_pub = rospy.Publisher('scan_targets', Float64MultiArray, queue_size=1)
+  cmd_pos_pub = rospy.Publisher('franka_cmd_pos', Float64MultiArray, queue_size=1)
+  cmd_acc_pub = rospy.Publisher('franka_cmd_acc', Twist, queue_size=1)
+  contact_mode_pub = rospy.Publisher('isContact', Bool, queue_size=1)
+  pubContactMode = rospy.get_param('pubContactMode')    # do not publish contact mode when working with teleop
+
+  scan_tar_msg = Float64MultiArray()
+  cmd_pos_msg = Float64MultiArray()
+  cmd_acc_msg = Twist()
+  contact_mode_msg = Bool()
+
   # Configure depth and color streams
   pipeline = rs.pipeline()
   config = rs.config()
@@ -205,9 +206,6 @@ def main():
 
   # default target in pixel
   pix_tar = [320, 240]
-
-  # initialize ros node
-  rospy.init_node('LUS_auto_landing_manual', anonymous=True)
 
   max_num_reg = 4
   reg_data = float('nan')*np.ones([max_num_reg, 12])
@@ -355,7 +353,8 @@ def main():
         cmd_acc_pub.publish(cmd_acc_msg)
 
       scan_tar_pub.publish(scan_tar_msg)
-      contact_mode_pub.publish(contact_mode_msg)
+      if pubContactMode == 1:
+        contact_mode_pub.publish(contact_mode_msg)
 
       rate.sleep()
 

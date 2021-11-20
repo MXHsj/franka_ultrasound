@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>robotic_ultrasound</name>
+  <name>franka_ultrasound</name>
   <version>0.0.0</version>
-  <description>The robotic_ultrasound package</description>
+  <description>The franka_ultrasound package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->

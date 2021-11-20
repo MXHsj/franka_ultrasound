@@ -90,7 +90,7 @@ while not rospy.is_shutdown():
     tar_pix = np.zeros((len(row), 2), dtype=int)
     for i in range(len(row)):
       tar_pix[i, :] = [row[i]-80, col[i]]   # row needs substract padded height
-    pnts = rs_obj.getPoint(depth_frame, tar_pix)
+    pnts = rs_obj.get_xyz(depth_frame, tar_pix)
     save_tar(row, col, pnts, writer)
     # vis
     # for i in range(len(row)):
