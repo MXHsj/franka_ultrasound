@@ -10,12 +10,12 @@ dir1 = '../data/surface_normal/11-15-2021-reg1-surf_norm.csv';
 dir2 = '../data/surface_normal/11-10-2021-reg2-surf_norm.csv';
 dir3 = '../data/surface_normal/11-15-2021-reg7-surf_norm.csv';
 dir4 = '../data/surface_normal/11-15-2021-reg8-surf_norm.csv';
-dir5 = '../data/surface_normal/11-10-2021-reg3-surf_norm.csv';
+dir5 = '../data/surface_normal/11-15-2021-reg3-surf_norm.csv';
 dir6 = '../data/surface_normal/11-15-2021-reg4-surf_norm.csv';
-dir7 = '../data/surface_normal/11-15-2021-reg9-surf_norm.csv';
-dir8 = '../data/surface_normal/11-15-2021-reg10-surf_norm.csv';
+dir7 = '../data/surface_normal/11-10-2021-reg9-surf_norm.csv';
+dir8 = '../data/surface_normal/11-10-2021-reg10-surf_norm.csv';
 dir9 = '../data/surface_normal/11-10-2021-reg5-surf_norm.csv';
-dir10 = '../data/surface_normal/11-10-2021-reg6-surf_norm.csv';
+dir10 = '../data/surface_normal/11-15-2021-reg6-surf_norm.csv';
 dir11 = '../data/surface_normal/11-10-2021-reg11-surf_norm.csv';
 dir12 = '../data/surface_normal/11-10-2021-reg12-surf_norm.csv';
 
@@ -260,12 +260,12 @@ boxchart([rot_errs(:,i),NaN(nKept,1)],'JitterOutliers','on','MarkerStyle','.')
 if i == 5
     ylabel('[rad]');
 end
-ylim([0,0.55]);
+% ylim([0,0.55]);
 yyaxis right
 boxchart([NaN(nKept,1),trans_errs(:,i)],'JitterOutliers','on','MarkerStyle','.')
 if i == 8
     ylabel('[mm]');
 end
-ylim([0, 10]);
+% ylim([0, 10]);
 set(gca,'xtick',[]); ax.YGrid = 'on'; 
 end

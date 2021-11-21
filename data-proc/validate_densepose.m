@@ -7,8 +7,8 @@
 clc; clear; close all
 
 % read raw data (xlsread only works on win)
-[~, mk_data_raw] = xlsread('../data/marker_pos_log.csv');
-[~, dp_data_raw] = xlsread('../data/dp_target_log.csv');
+[~, mk_data_raw] = xlsread('../data/densepose/marker_pos_log.csv');
+[~, dp_data_raw] = xlsread('../data/densepose/dp_target_log.csv');
 
 % extract number from str
 mk_data.pix = zeros(size(mk_data_raw,1),2,4);
@@ -93,7 +93,7 @@ box on
 
 %%
 % rgb = imread('../data/mk_frame.png');
-rgb = imread('../data/color_frame.png');
+rgb = imread('../data/densepose/color_frame.png');
 figure('Position',[1920/3,1080/3,640,640])
 imagesc(rgb); axis on
 hold on
