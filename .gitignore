@@ -1,5 +1,6 @@
 # *.csv
 # *.png
+*.pyc
 *.asv
 *.jpg
 *.JPEG

@@ -1,15 +1,16 @@
 #! /usr/bin/env python3
 '''
-record robot data
+record robot state T_O_ee, Wrench, isContact
 '''
-import numpy as np
-import rospy
+import os
 import csv
+import rospy
+import numpy as np
 from franka_msgs.msg import FrankaState
-from geometry_msgs.msg import WrenchStamped
-from std_msgs.msg import Float64MultiArray
-from std_msgs.msg import Int16
 from std_msgs.msg import Bool
+from std_msgs.msg import Int16
+from std_msgs.msg import Float64MultiArray
+from geometry_msgs.msg import WrenchStamped
 
 
 def msg2matrix(raw_msg):
@@ -102,8 +103,8 @@ key_cmd = -1
 
 def main():
   rospy.init_node('robot_data_logger', anonymous=True)
-  path2file = '/home/xihan/catkin_ws/src/robotic_ultrasound/data_log/robot_data_log.csv'
-  file_out = open(path2file, 'w')
+  file_path = os.path.join(os.path.dirname(__file__), '../data/robot_state/robot_state.csv')
+  file_out = open(file_path, 'w')
   writer = csv.writer(file_out)
   # writer.writerow(T_O_reg1.flatten())
   # writer.writerow(T_O_reg2.flatten())

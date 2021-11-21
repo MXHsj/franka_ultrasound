@@ -15,13 +15,12 @@ def force_callback(msg):
   Fz = msg.wrench.force.z
 
 
-rospy.Subscriber('/franka_state_controller/F_ext',
-                 WrenchStamped, force_callback)
+rospy.Subscriber('/franka_state_controller/F_ext', WrenchStamped, force_callback)
 
 
 def main():
   rospy.init_node('force_data_logger', anonymous=True)
-  path2file = '/home/xihan/catkin_ws/src/robotic_ultrasound/scripts/force_data_log.csv'
+  path2file = os.path.join(os.path.dirname(__file__), '../data/robot/robot_force_log.csv')
   file_out = open(path2file, 'w')
   writer = csv.writer(file_out)
   rate = rospy.Rate(50)

@@ -30,10 +30,10 @@ class Teleop:
     self.js.buttons = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     # master & slave motion
-    self.T_O_ee = np.array([[-0.0117, -0.9996, 0.0239, 0.0],
-                            [-0.9989, 0.01278, 0.0435, 0.0],
-                            [-0.0438, -0.0234, -0.9987, 0.0],
-                            [0.3439, 0.0005, 0.4420, 1.0]]).transpose()
+    self.T_O_ee = np.array([[0.0, -1.0, 0.0, 0.0],
+                            [-1.0, 0.0, 0.0, 0.0],
+                            [0.0, 0.0, -1.0, 0.0],
+                            [0.35, 0.0, 0.35, 1.0]]).transpose()
     self.curr_slave = Twist()
     self.last_slave = Twist()
     self.curr_master = Twist()
@@ -48,8 +48,8 @@ class Teleop:
     self.triggerStateOld = False
     self.wrench_slave = Wrench()
     self.wrench_slave_old = Wrench()
-    self.force_des = 3.5  # max contact force [N]
-    self.force_max = 8.0
+    self.force_des = 5.5
+    self.force_max = 8.0  # max contact force [N]
 
   def doTeleop(self):
     # ROS stuff
@@ -59,7 +59,7 @@ class Teleop:
     rospy.Subscriber("joy", Joy, self.js_callback)
     rospy.Subscriber('franka_state_controller/franka_states', FrankaState, self.ee_callback)
     rospy.Subscriber('/franka_state_controller/F_ext', WrenchStamped, self.force_callback)
-    self.freq = rospy.get_param('~hz', 500)
+    self.freq = rospy.get_param('~hz', 100)
     rate = rospy.Rate(self.freq)
 
     while not rospy.is_shutdown():
@@ -150,7 +150,7 @@ class Teleop:
     '''map joystick input to desired eef pose'''
     sLin = [0.008, 0.008, 0.006]   # [x, y, z] [0.008, 0.008, 0.006]
     sAng = [0.008, 0.008, 0.008]   # [x, y, z] [0.008, 0.008, 0.01]
-    stiff = [6e-4, 6e-4, 7e-4]    # [x, y, z] [6e-4, 6e-4, 7e-4]
+    stiff = [7e-4, 7e-4, 7e-4]    # [x, y, z] [6e-4, 6e-4, 7e-4]
     dampz = 1.8e-6
     Vz = self.T_O_ee[:3, 2]		# approach vector
     force_error = self.force_des-self.wrench_slave.force.z
@@ -177,10 +177,9 @@ class Teleop:
       if self.isContact:
         self.curr_master.linear.x = self.curr_slave.linear.x + \
             (sLin[0]/5*self.js.axes[1] + stiff[0]*force_error*Vz[0])
-        self.curr_master.linear.y = self.curr_slave.linear.y - \
-            (sLin[1]/5*self.js.axes[0] + stiff[1]*force_error*Vz[1])
-        self.curr_master.linear.z = self.curr_slave.linear.z + \
-            (stiff[2]*force_error+dampz*force_error_d)*Vz[2]
+        self.curr_master.linear.y = self.curr_slave.linear.y + \
+            (-sLin[1]/5*self.js.axes[0] + stiff[1]*force_error*Vz[1])
+        self.curr_master.linear.z = self.curr_slave.linear.z + (stiff[2]*force_error)*Vz[2]
         # print(self.curr_master.linear.z)
       else:
         self.curr_master.linear.x = self.curr_slave.linear.x + (sLin[0]*self.js.axes[1])
