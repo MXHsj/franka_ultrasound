@@ -168,8 +168,12 @@ elif eef_id == 1:
                        [0.0, 0.0, 0.0, 1.0]])
 # --------------------------------------------------------------------------
 
+if __name__ == '__main__':
+  scan_tar_msg = Float64MultiArray()
+  cmd_pos_msg = Float64MultiArray()
+  cmd_acc_msg = Twist()
+  contact_mode_msg = Bool()
 
-def main():
   rospy.init_node('LUS_auto_landing_manual', anonymous=True)
   rospy.Subscriber('franka_state_controller/franka_states', FrankaState, ee_callback)
   rospy.Subscriber('cmd_js', Twist, js_callback)
@@ -179,11 +183,6 @@ def main():
   cmd_acc_pub = rospy.Publisher('franka_cmd_acc', Twist, queue_size=1)
   contact_mode_pub = rospy.Publisher('isContact', Bool, queue_size=1)
   pubContactMode = rospy.get_param('pubContactMode')    # do not publish contact mode when working with teleop
-
-  scan_tar_msg = Float64MultiArray()
-  cmd_pos_msg = Float64MultiArray()
-  cmd_acc_msg = Twist()
-  contact_mode_msg = Bool()
 
   # Configure depth and color streams
   pipeline = rs.pipeline()
@@ -284,7 +283,7 @@ def main():
       trans_error = pose_err[:, -1]
       rot_error = pose_err[:, :3].flatten()
       isReachedTrans = True if all([abs(err) < 0.0035 for err in trans_error]) else False
-      isReachedRot = True if all([abs(err) < 0.08 for err in rot_error]) else False
+      isReachedRot = True if all([abs(err) < 0.1 for err in rot_error]) else False
       if isReachedRot and isReachedTrans and op_mode == 'auto':
         # if op_mode == 'auto':
         print("arrive at target ", tar_togo-1, " switch to manual")
@@ -362,7 +361,3 @@ def main():
     # Stop streaming
     pipeline.stop()
     cv2.destroyAllWindows()
-
-
-if __name__ == '__main__':
-  main()

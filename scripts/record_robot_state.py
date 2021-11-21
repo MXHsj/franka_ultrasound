@@ -103,8 +103,8 @@ key_cmd = -1
 
 def main():
   rospy.init_node('robot_data_logger', anonymous=True)
-  path2file = os.path.join(os.path.dirname(__file__), '../data/robot/robot_state_log.csv')
-  file_out = open(path2file, 'w')
+  file_path = os.path.join(os.path.dirname(__file__), '../data/robot_state/robot_state.csv')
+  file_out = open(file_path, 'w')
   writer = csv.writer(file_out)
   # writer.writerow(T_O_reg1.flatten())
   # writer.writerow(T_O_reg2.flatten())
