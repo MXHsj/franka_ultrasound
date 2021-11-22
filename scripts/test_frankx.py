@@ -1,8 +1,11 @@
 # ! /usr/bin/env python3
 import os
 import json
+import math
 import numpy as np
-from frankx import Affine, Robot, JointMotion, LinearRelativeMotion, PathMotion
+from frankx import Affine, Robot
+from frankx import JointMotion, LinearRelativeMotion, PathMotion
+from frankx import Kinematics, NullSpaceHandling
 
 robot = Robot("172.16.0.2")
 # robot.set_default_behavior()  # ignore eef?
@@ -31,9 +34,14 @@ print('F_T_EE: ', state.F_T_EE)
 # robot.move(motion)
 
 # path motion
-motion = PathMotion([
-    Affine(0.5, 0.0, 0.35),
-    Affine(0.5, 0.0, 0.24, -0.3),
-    Affine(0.5, -0.2, 0.35),
-], blend_max_distance=0.05)
-robot.move(motion)
+# motion = PathMotion([
+#     Affine(0.5, 0.0, 0.35),
+#     Affine(0.5, 0.0, 0.24, -0.3),
+#     Affine(0.5, -0.2, 0.35),
+# ], blend_max_distance=0.05)
+# robot.move(motion)
+
+# Forward kinematic
+q = [0.0, -math.pi/6, 0, -2*math.pi/3, 0.0, math.pi/2, -math.pi/3]
+x = Affine(Kinematics.forward(q))
+print('Current end effector position: ', x)

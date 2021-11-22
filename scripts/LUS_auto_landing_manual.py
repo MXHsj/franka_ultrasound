@@ -327,17 +327,17 @@ if __name__ == '__main__':
         cmd_pos_msg.data = T_O_home[:3, :4].transpose().flatten()
 
       elif key == ord('w'):
-        pix_tar[1] = pix_tar[1] - 10 if pix_tar[1]-20 > 0 else pix_tar[1]
+        pix_tar[1] = pix_tar[1] - 5 if pix_tar[1]-20 > 0 else pix_tar[1]
         print('move up', pix_tar)
       elif key == ord('a'):
-        pix_tar[0] = pix_tar[0] - 10 if pix_tar[0]-20 > 0 else pix_tar[0]
+        pix_tar[0] = pix_tar[0] - 5 if pix_tar[0]-20 > 0 else pix_tar[0]
         print('move left', pix_tar)
       elif key == ord('s'):
-        pix_tar[1] = pix_tar[1] + 10 if pix_tar[1]+20 < 480 else pix_tar[1]
+        pix_tar[1] = pix_tar[1] + 5 if pix_tar[1]+20 < 480 else pix_tar[1]
         print('move down', pix_tar)
       elif key == ord('d'):
         print('move right', pix_tar)
-        pix_tar[0] = pix_tar[0] + 10 if pix_tar[0]+20 < 640 else pix_tar[0]
+        pix_tar[0] = pix_tar[0] + 5 if pix_tar[0]+20 < 640 else pix_tar[0]
 
       if op_mode == 'auto' or op_mode == 'home':
         # cmd_acc_msg.linear.x = float('nan')
