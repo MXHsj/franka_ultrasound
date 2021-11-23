@@ -98,11 +98,20 @@ end
 
 %% calculate CNR
 % get ROI
-CNR = cell(4,5);
+CNR = zeros(4,5);
 for i = 1:size(bscan,1)*size(bscan,2)
-    CNR{i} = abs(mean(roi{i},'all')-mean(bg{i},'all'))/ ...
+    CNR(i) = abs(mean(roi{i},'all')-mean(bg{i},'all'))/ ...
         sqrt(var(double(roi{i}),1,'all')+var(double(bg{i}),1,'all'));
 end
+
+%% plot CNR
+figure('Position',[1920/3, 1080/3, 500, 400])
+bar(mean(CNR, 2),'FaceColor','#4DBEEE','BarWidth',0.6);
+ax = get(gca); ax.YGrid = 'on';
+hold on
+er = errorbar(1:4,mean(CNR,2),std(CNR,[],2),'LineStyle','none','Color',[0 0 0],'LineWidth',1);
+ylabel('CNR'); title(date)
+% set(gca,'xtick',[]);
 
 %% cluster based ROI
 bw = imbinarize(bscan{1}, 0.9);

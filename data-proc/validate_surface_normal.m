@@ -252,20 +252,19 @@ set(gcf, 'Position',  [500, 200, 350, 550])
 %% 2D subplots translation + rotation
 figure('Position',[1920/3,1080/3,350*2,400])
 tlo = tiledlayout(3,4);
-
 for i = 1:12
 ax = nexttile;
 yyaxis left
-boxchart([rot_errs(:,i),NaN(nKept,1)],'JitterOutliers','on','MarkerStyle','.')
+boxchart([rad2deg(rot_errs(:,i)),NaN(nKept,1)],'JitterOutliers','on','MarkerStyle','.')
 if i == 5
-    ylabel('[rad]');
+    ylabel('[deg]');
 end
-% ylim([0,0.55]);
+ylim([0,40]);
 yyaxis right
 boxchart([NaN(nKept,1),trans_errs(:,i)],'JitterOutliers','on','MarkerStyle','.')
 if i == 8
     ylabel('[mm]');
 end
-% ylim([0, 10]);
+ylim([0, 20]);
 set(gca,'xtick',[]); ax.YGrid = 'on'; 
 end
