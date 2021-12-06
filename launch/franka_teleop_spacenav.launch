@@ -1,0 +1,21 @@
+<launch>
+    <arg name="cmd_topic" default="cmd_js" />
+
+    <node pkg="spacenav_node" type="spacenav_node" name="spacenav_node">
+      <param name="zero_when_static" value="false"/>
+      <param name="static_count_threshold" value="1000"/>
+      <param name="static_trans_deadband" value="40"/>
+      <param name="static_rot_deadband" value="40"/>
+    </node>
+
+    <!-- <arg name="cmd_topic" default="franka_cmd_acc" />  -->
+    <node pkg="franka_ultrasound" type="teleop_spacenav.py" name="franka_teleop_spacenav" output="screen">
+        <remap from="cmd_js" to="$(arg cmd_topic)" />
+        <param name="ax0deadzone" value="0.05" />
+        <param name="ax1deadzone" value="0.05" />
+        <param name="ax2deadzone" value="0.05" />
+        <param name="ax3deadzone" value="0.05" />
+        <param name="ax4deadzone" value="0.05" />
+        <param name="ax5deadzone" value="0.08" />
+    </node>
+</launch>

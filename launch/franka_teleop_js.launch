@@ -9,7 +9,7 @@
 
     <!-- <arg name="cmd_topic" default="franka_cmd_acc" />  -->
     <!-- <node pkg="franka_ultrasound" type="joystick_to_franka.py" name="franka_teleop" output="screen"> -->
-    <node pkg="franka_ultrasound" type="teleop_joystick.py" name="franka_teleop" output="screen">
+    <node pkg="franka_ultrasound" type="teleop_joystick.py" name="franka_teleop_joystick" output="screen">
         <remap from="cmd_js" to="$(arg cmd_topic)" />
         <param name="ax0deadzone" value="0.05" />
         <param name="ax1deadzone" value="0.05" />

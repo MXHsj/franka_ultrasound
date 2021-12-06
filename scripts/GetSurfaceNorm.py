@@ -6,31 +6,22 @@ solve 3D normal vector from 2D square patch
 import numpy as np
 import math
 
-# params
-edge_length = 12
 
-
-def get_patch(center):
-    # square patch with 9 control points
-  col_vec = [center[0],
-             center[0]-edge/2,
-             center[0]-edge/2,
-             center[0]-edge/2,
-             center[0],
-             center[0]+edge/2,
-             center[0]+edge/2,
-             center[0]+edge/2,
-             center[0]]
-  row_vec = [center[1],
-             center[1]+edge/2,
-             center[1],
-             center[1]-edge/2,
-             center[1]-edge/2,
-             center[1]-edge/2,
-             center[1],
-             center[1]+edge/2,
-             center[1]+edge/2]
-  return col_vec, row_vec
+def get_patch(center: list) -> list:
+  # params
+  edge = 12
+  # square patch with 9 control points
+  patch = []
+  patch.append([center[0],        center[1]])
+  patch.append([center[0]-edge/2, center[1]+edge/2])
+  patch.append([center[0]-edge/2, center[1]])
+  patch.append([center[0]-edge/2, center[1]-edge/2])
+  patch.append([center[0],        center[1]-edge/2])
+  patch.append([center[0]+edge/2, center[1]-edge/2])
+  patch.append([center[0]+edge/2, center[1]])
+  patch.append([center[0]+edge/2, center[1]+edge/2])
+  patch.append([center[0],        center[1]+edge/2])
+  return patch
 
 
 def get_normal_vector(p0, p1, p2):
@@ -45,7 +36,7 @@ def get_normal_vector(p0, p1, p2):
   return direction
 
 
-def get_surface_normal(point_x, point_y, point_z):
+def get_surface_normal(point_x: np.ndarray, point_y: np.ndarray, point_z: np.ndarray):
   # find normal vector of the plane P1P2P3P4
   P0 = [point_x[0], point_y[0], point_z[0]]
   P1 = [point_x[1], point_y[1], point_z[1]]
