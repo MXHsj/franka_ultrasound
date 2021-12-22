@@ -52,7 +52,7 @@ def selected_uv2pix_in_image(IUV, U, V):
     else:
       x_[i] = np.mean(x_intersects)
       y_[i] = np.mean(y_intersects)
-    print("iter:", i, "row:", x_[i], "col:", y_[i])
+    # print("iter:", i, "row:", x_[i], "col:", y_[i])
   return x_, y_
 
 
@@ -73,8 +73,14 @@ im_pub = rospy.Publisher('DensePoseInput', Image, queue_size=10)
 rospy.Subscriber('IUV', Image, iuv_callback)
 file_out = open(dp_tar_path, 'w')
 writer = csv.writer(file_out)
+isRecording = False
 
 cv2.namedWindow('realsense', cv2.WINDOW_AUTOSIZE)
+''' ========== usage ========== '''
+print('press q to exit')
+print('press s to capture current RGB & IUV image')
+print('press r to start recording data, press again to stop')
+''' ==========================='''
 while not rospy.is_shutdown():
   depth_frame, _ = rs_obj.stream_depth2color_aligned()
   color_padded = cv2.copyMakeBorder(rs_obj.color_image, 80, 80, 0, 0, cv2.BORDER_CONSTANT, value=[0, 0, 0])
@@ -91,10 +97,11 @@ while not rospy.is_shutdown():
     for i in range(len(row)):
       tar_pix[i, :] = [row[i]-80, col[i]]   # row needs substract padded height
     pnts = rs_obj.get_xyz(depth_frame, tar_pix)
-    save_tar(row, col, pnts, writer)
+    if isRecording:
+      save_tar(row, col, pnts, writer)
     # vis
-    # for i in range(len(row)):
-    #   cv2.circle(color_padded, (row[i], col[i]), 5, (200, 200, 200), thickness=1)
+    for i in range(len(row)):
+      cv2.circle(color_padded, (row[i], col[i]), 5, (200, 200, 200), thickness=-1)
     img2show = np.hstack((color_padded, IUV))
   else:
     img2show = color_padded
@@ -106,7 +113,10 @@ while not rospy.is_shutdown():
   elif key == ord('s'):
     cv2.imwrite(iuv_frm_path, IUV)
     cv2.imwrite(color_frm_path, color_padded)
-    cv2.imwrite(depth_frm_path, depth_padded)
+    # cv2.imwrite(depth_frm_path, depth_padded)
     print('frame saved')
+  elif key == ord('r'):
+    isRecording = not isRecording
+    print('isRecording', isRecording)
 
 file_out.close()

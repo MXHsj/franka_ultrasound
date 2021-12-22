@@ -141,26 +141,26 @@ class Teleop:
     # map position
     if self.isContact:
       self.curr_master.linear.x = self.curr_slave.linear.x + \
-          (sLin[0]/5*self.js.axes[0] + stiff[0]*force_error*Vz[0])
+          (-sLin[0]/5*self.js.axes[0] + stiff[0]*force_error*Vz[0])
       self.curr_master.linear.y = self.curr_slave.linear.y + \
           (-sLin[1]/5*self.js.axes[1] + stiff[1]*force_error*Vz[1])
       self.curr_master.linear.z = self.curr_slave.linear.z + (stiff[2]*force_error)*Vz[2]
       # print(self.curr_master.linear.z)
     else:
-      self.curr_master.linear.x = self.curr_slave.linear.x + (sLin[0]*self.js.axes[0])
+      self.curr_master.linear.x = self.curr_slave.linear.x - (sLin[0]*self.js.axes[0])
       self.curr_master.linear.y = self.curr_slave.linear.y - (sLin[1]*self.js.axes[1])
       self.curr_master.linear.z = self.curr_slave.linear.z + (sLin[2]*self.js.axes[2])
     # map orientation
     if self.isContact:
-      self.curr_master.angular.x = self.curr_slave.angular.x + \
+      self.curr_master.angular.x = self.curr_slave.angular.x - \
           sAng[0]*self.js.axes[3]*(self.force_sum < self.force_max)
-      self.curr_master.angular.y = self.curr_slave.angular.y + \
+      self.curr_master.angular.y = self.curr_slave.angular.y - \
           sAng[1]*self.js.axes[4]*(self.force_sum < self.force_max)
       self.curr_master.angular.z = self.curr_slave.angular.z + \
           sAng[2]*self.js.axes[5]*(self.force_sum < self.force_max)
     else:
-      self.curr_master.angular.x = self.curr_slave.angular.x + sAng[0]*self.js.axes[3]
-      self.curr_master.angular.y = self.curr_slave.angular.y + sAng[1]*self.js.axes[4]
+      self.curr_master.angular.x = self.curr_slave.angular.x - sAng[0]*self.js.axes[3]
+      self.curr_master.angular.y = self.curr_slave.angular.y - sAng[1]*self.js.axes[4]
       self.curr_master.angular.z = self.curr_slave.angular.z + sAng[2]*self.js.axes[5]
 
   def PDcontrol(self):

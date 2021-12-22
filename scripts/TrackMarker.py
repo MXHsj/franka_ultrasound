@@ -17,9 +17,9 @@ class TrackMarker:
 
   def __init__(self, num_mk=8, dict_id=6):
     if dict_id == 6:
-      __aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)
+      self.__aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)
     elif dict_id == 4:
-      __aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_250)
+      self.__aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_250)
     self.num_markers = num_mk
     self.mk_bbox_frame = None
     self.mk_axis_frame = None
