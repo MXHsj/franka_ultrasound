@@ -101,7 +101,7 @@ while not rospy.is_shutdown():
       save_tar(row, col, pnts, writer)
     # vis
     for i in range(len(row)):
-      cv2.circle(color_padded, (row[i], col[i]), 5, (200, 200, 200), thickness=-1)
+      cv2.circle(color_padded, (row[i], col[i]), 5, (250, 100, 180), thickness=-1)
     img2show = np.hstack((color_padded, IUV))
   else:
     img2show = color_padded

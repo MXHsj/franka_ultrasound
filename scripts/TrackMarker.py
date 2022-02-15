@@ -86,7 +86,7 @@ def main():
   mk_obj = TrackMarker(num_mk=4)
   cv2.namedWindow('realsense', cv2.WINDOW_AUTOSIZE)
   nFrames = 20
-  freq = 0.5
+  freq = 0.8
   frmCount = 1
   while True:
     now = time.time()

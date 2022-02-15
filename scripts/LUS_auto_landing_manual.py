@@ -287,8 +287,8 @@ if __name__ == '__main__':
       if isReachedRot and isReachedTrans and op_mode == 'auto':
         # if op_mode == 'auto':
         print("arrive at target ", tar_togo-1, " switch to manual")
-        op_mode = 'tele'
         contact_mode_msg.data = True
+        op_mode = 'tele'
         # elif op_mode == 'home':
         #     print("arrive home")
         #     op_mode = 'tele'
