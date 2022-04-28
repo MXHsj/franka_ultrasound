@@ -1,9 +1,9 @@
 {
-  "mass": 1,
+  "mass": 0.85,
   "centerOfMass": [
     0,
     0,
-    0.1715
+    0.150
   ],
   "transformation": [
     -0.866,
